@@ -1,0 +1,19 @@
+<iso-config>
+    <isomsg name="0800" type="0800">
+        <isofield number="3" length="6" type="n"/>
+        <isofield number="4" length="12" type="n"/>
+        <isofield number="11" length="6" type="n"/>
+        <isofield number="12" length="6" type="n"/>
+        <isofield number="13" length="4" type="n"/>
+        <isofield number="14" length="4" type="n"/>
+        <isofield number="22" length="3" type="n"/>
+        <isofield number="25" length="2" type="n"/>
+        <isofield number="35" length="37" type="z"/>
+        <isofield number="41" length="8" type="ans"/>
+        <isofield number="42" length="15" type="ans"/>
+    </isomsg>
+</iso-config>
+
+
+
+
