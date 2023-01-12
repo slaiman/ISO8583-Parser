@@ -1,5 +1,7 @@
 package com.parser;
 
+import com.entities.ISOField;
+
 import java.util.HashMap;
 
 public class Initializer {
@@ -138,19 +140,21 @@ public class Initializer {
         return FieldsMapper;
     }
 
-    public static HashMap<Integer,ISOField> initializeFieldProperties() {
+    public static HashMap<Integer, ISOField> initializeFieldProperties() {
         HashMap<Integer,ISOField> FieldsProperties = new HashMap<>();
 
         /*iso.id = 0;
         iso.length = 4;
         iso.name = "MESSAGE TYPE INDICATOR";
-        FieldsProperties.put(0,iso);
-
-        iso.id = 1;
+        FieldsProperties.put(0,iso);*/
+        ISOField iso = new ISOField();
+        iso.id = 0;
         iso.length = 16;
         iso.name = "BIT MAP";
-        FieldsProperties.put(1, iso);*/
-        ISOField iso = new ISOField();
+        iso.type = "IFA_BITMAP";
+        FieldsProperties.put(0, iso);
+
+        iso = new ISOField();
         iso.id = 1;
         iso.length = 19;
         iso.name = "SECRET ID";

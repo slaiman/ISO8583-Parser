@@ -1,5 +1,7 @@
 package com.parser;
 
+import com.entities.ISOField;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -7,21 +9,21 @@ import java.util.stream.Collectors;
 
 public class ISO8683Parser {
 
-    private Map<Integer, String> dataElements;
-    private HashMap<String,String> mit;
+    private Map<Integer, ISOField> dataElements;
+    private HashMap<String,String> mti;
     private HashMap<Integer,Integer> bitMapper;
     private HashMap<Integer,String> fieldsDescriptionMapper;
     private HashMap<Integer,ISOField> fieldsProperties;
 
 
-    public Map<Integer, String> parseMessage(String message) {
+    public Map<Integer, ISOField> parseMessage(String message) {
 
         // Initialize empty maps to store data and meta-data
-        mit = new HashMap<String, String>();
+        mti = new HashMap<String, String>();
         bitMapper = new HashMap<Integer, Integer>();
         fieldsDescriptionMapper = new HashMap<Integer, String>();
         fieldsProperties = new HashMap<Integer, ISOField>();
-        dataElements = new TreeMap<Integer, String>();
+        dataElements = new TreeMap<Integer, ISOField>();
 
         // First, extract the message header and the bitmap from the message
         String MTI = message.substring(0, 4);
@@ -55,18 +57,21 @@ public class ISO8683Parser {
         Map<Integer, Integer> sortedFiltered = new TreeMap<>(filtered);
 
         for(Integer id : sortedFiltered.keySet()) {
+            ISOField field = fieldsProperties.get(id - 1);
             if(id == 1){
                 int length = 16;
                 String value = msg.substring(index, index + length);
                 index += length;
-                dataElements.put(id,value);
+                field.actualLength = length;
+                field.value = value;
+                dataElements.put(id, field);
             }
             else {
-                int length = fieldsProperties.get(id - 1).length;
-                String type = fieldsProperties.get(id - 1).type;
+                int length = field.length;
+                String type = field.type;
                 String value;
                 if(index == msg.length()) {
-                    dataElements.put(id, "");
+                    dataElements.put(id, null);
                     continue;
                 }
                 if (type.contains("IFA_LLL") || type.contains("IFA_LL")) {
@@ -84,26 +89,36 @@ public class ISO8683Parser {
 
                     if(index + prefixVal > msg.length()){
                         value = msg.substring(index, msg.length());
+                        field.actualLength = msg.length() - index;
                         index = msg.length();
                     }
                     else {
                         value = msg.substring(index, index + prefixVal);
+                        field.actualLength = prefixVal;
                         index += prefixVal;
                     }
                 }
                 else {
                     if(index + length > msg.length()){
                         value = msg.substring(index,msg.length());
+                        field.actualLength = msg.length() - index;
                         index = msg.length();
                     }
                     else {
                         value = msg.substring(index, index + length);
+                        field.actualLength = length;
                         index += length;
                     }
                 }
-                dataElements.put(id, value);
+                field.value = value;
+                dataElements.put(id, field);
             }
         }
+        parseDataElementValues();
+    }
+
+    public void parseDataElementValues(){
+
     }
 
     public int calcPrefix(String prefix) {
@@ -188,60 +203,89 @@ public class ISO8683Parser {
     }
 
     public void parseMTI(String MTI) {
-        switch (MTI.charAt(0)) {
+        if (MTI.charAt(0) == '0')  mti.put("ISO Version","ISO 8583:1987");
+        else if(MTI.charAt(0) == '1') mti.put("ISO Version","ISO 8583:1993");
+        else if(MTI.charAt(0) == '2') mti.put("ISO Version","ISO 8583:2003");
+        else if(MTI.charAt(0) == '3') mti.put("ISO Version","Reserved by ISO");
+        else if(MTI.charAt(0) == '4') mti.put("ISO Version","Reserved by ISO");
+        else if(MTI.charAt(0) == '5') mti.put("ISO Version","Reserved by ISO");
+        else if(MTI.charAt(0) == '6') mti.put("ISO Version","Reserved by ISO");
+        else if(MTI.charAt(0) == '7') mti.put("ISO Version","Reserved by ISO");
+        else if(MTI.charAt(0) == '8') mti.put("ISO Version","National use");
+        else if(MTI.charAt(0) == '9') mti.put("ISO Version","Private use");
 
-            case 0: mit.put("ISO Version","ISO 8583:1987");
-            case 1: mit.put("ISO Version","ISO 8583:1993");
-            case 2: mit.put("ISO Version","ISO 8583:2003");
-            case 3: mit.put("ISO Version","Reserved by ISO");
-            case 4: mit.put("ISO Version","Reserved by ISO");
-            case 5: mit.put("ISO Version","Reserved by ISO");
-            case 6: mit.put("ISO Version","Reserved by ISO");
-            case 7: mit.put("ISO Version","Reserved by ISO");
-            case 8: mit.put("ISO Version","National use");
-            case 9: mit.put("ISO Version","Private use");
-        }
+        if(MTI.charAt(1) == '0') mti.put("Message class","Reserved by ISO");
+        else if(MTI.charAt(1) == '1') mti.put("Message class","Authorization message");
+        else if(MTI.charAt(1) == '2') mti.put("Message class","Financial messages");
+        else if(MTI.charAt(1) == '3') mti.put("Message class","File actions message");
+        else if(MTI.charAt(1) == '4') mti.put("Message class","Reversal and chargeback messages");
+        else if(MTI.charAt(1) == '5') mti.put("Message class","Reconciliation message");
+        else if(MTI.charAt(1) == '6') mti.put("Message class","Administrative message");
+        else if(MTI.charAt(1) == '7') mti.put("Message class","Fee collection messages");
+        else if(MTI.charAt(1) == '8') mti.put("Message class","Network management message");
+        else if(MTI.charAt(1) == '9') mti.put("Message class","Reserved by ISO");
 
-        switch (MTI.charAt(1)) {
+        if(MTI.charAt(2) == '0') mti.put("Message function","Request");
+        else if(MTI.charAt(2) == '1') mti.put("Message function","Request response");
+        else if(MTI.charAt(2) == '2') mti.put("Message function","Advice");
+        else if(MTI.charAt(2) == '3') mti.put("Message function","Advice response");
+        else if(MTI.charAt(2) == '4') mti.put("Message function","Notification");
+        else if(MTI.charAt(2) == '5') mti.put("Message function","Notification acknowledgement");
+        else if(MTI.charAt(2) == '6') mti.put("Message function","Instruction");
+        else if(MTI.charAt(2) == '7') mti.put("Message function","Instruction acknowledgement");
+        else if(MTI.charAt(2) == '8') mti.put("Message function","Reserved by ISO");
+        else if(MTI.charAt(2) == '9') mti.put("Message function","Reserved by ISO");
 
-            case 0: mit.put("Message class","Reserved by ISO");
-            case 1: mit.put("Message class","Authorization message");
-            case 2: mit.put("Message class","Financial messages");
-            case 3: mit.put("Message class","File actions message");
-            case 4: mit.put("Message class","Reversal and chargeback messages");
-            case 5: mit.put("Message class","Reconciliation message");
-            case 6: mit.put("Message class","Administrative message");
-            case 7: mit.put("Message class","Fee collection messages");
-            case 8: mit.put("Message class","Network management message");
-            case 9: mit.put("Message class","Reserved by ISO");
-        }
 
-        switch (MTI.charAt(2)) {
+        if(MTI.charAt(3) == '0') mti.put("Message origin","Acquirer");
+        else if(MTI.charAt(3) == '1') mti.put("Message origin","Acquirer repeat");
+        else if(MTI.charAt(3) == '2') mti.put("Message origin","Issuer");
+        else if(MTI.charAt(3) == '3') mti.put("Message origin","Issuer repeat");
+        else if(MTI.charAt(3) == '4') mti.put("Message origin","Other");
+        else if(MTI.charAt(3) == '5') mti.put("Message origin","Reserved by ISO");
+        else if(MTI.charAt(3) == '6') mti.put("Message origin","Reserved by ISO");
+        else if(MTI.charAt(3) == '7') mti.put("Message origin","Reserved by ISO");
+        else if(MTI.charAt(3) == '8') mti.put("Message origin","Reserved by ISO");
+        else if(MTI.charAt(3) == '9') mti.put("Message origin","Reserved by ISO");
+    }
 
-            case 0: mit.put("Message function","Request");
-            case 1: mit.put("Message function","Request response");
-            case 2: mit.put("Message function","Advice");
-            case 3: mit.put("Message function","Advice response");
-            case 4: mit.put("Message function","Notification");
-            case 5: mit.put("Message function","Notification acknowledgement");
-            case 6: mit.put("Message function","Instruction");
-            case 7: mit.put("Message function","Instruction acknowledgement");
-            case 8: mit.put("Message function","Reserved by ISO");
-            case 9: mit.put("Message function","Reserved by ISO");
-        }
+    public Map<Integer, ISOField> getDataElements() {
+        return dataElements;
+    }
 
-        switch (MTI.charAt(3)) {
+    public void setDataElements(Map<Integer, ISOField> dataElements) {
+        this.dataElements = dataElements;
+    }
 
-            case 0: mit.put("Message origin","Acquirer");
-            case 1: mit.put("Message origin","Acquirer repeat");
-            case 2: mit.put("Message origin","Issuer");
-            case 3: mit.put("Message origin","Issuer repeat");
-            case 4: mit.put("Message origin","Other");
-            case 5: mit.put("Message origin","Reserved by ISO");
-            case 6: mit.put("Message origin","Reserved by ISO");
-            case 7: mit.put("Message origin","Reserved by ISO");
-            case 8: mit.put("Message origin","Reserved by ISO");
-            case 9: mit.put("Message origin","Reserved by ISO");
-        }
+    public HashMap<String, String> getMit() {
+        return mti;
+    }
+
+    public void setMit(HashMap<String, String> mti) {
+        this.mti = mti;
+    }
+
+    public HashMap<Integer, Integer> getBitMapper() {
+        return bitMapper;
+    }
+
+    public void setBitMapper(HashMap<Integer, Integer> bitMapper) {
+        this.bitMapper = bitMapper;
+    }
+
+    public HashMap<Integer, String> getFieldsDescriptionMapper() {
+        return fieldsDescriptionMapper;
+    }
+
+    public void setFieldsDescriptionMapper(HashMap<Integer, String> fieldsDescriptionMapper) {
+        this.fieldsDescriptionMapper = fieldsDescriptionMapper;
+    }
+
+    public HashMap<Integer, ISOField> getFieldsProperties() {
+        return fieldsProperties;
+    }
+
+    public void setFieldsProperties(HashMap<Integer, ISOField> fieldsProperties) {
+        this.fieldsProperties = fieldsProperties;
     }
 }
