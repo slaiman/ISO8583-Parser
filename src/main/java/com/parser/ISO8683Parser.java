@@ -16,7 +16,7 @@ public class ISO8683Parser {
     private HashMap<Integer,ISOField> fieldsProperties;
 
 
-    public Map<Integer, ISOField> parseMessage(String message) {
+    public void parseMessage(String message) {
 
         // Initialize empty maps to store data and meta-data
         mti = new HashMap<String, String>();
@@ -45,13 +45,11 @@ public class ISO8683Parser {
 
         int index = 20;
 
-        parseMessage(message,index);
-
-        // Return the map of data elements
-        return dataElements;
+        decodeMessage(message,index);
     }
 
-    public void parseMessage(String msg, int index){
+    public void decodeMessage(String msg, int index){
+
         //filter key-value mappers according to value = 1
         Map<Integer,Integer> filtered = bitMapper.entrySet().stream().filter(a->a.getValue().intValue() == 1).collect(Collectors.toMap(a-> a.getKey(), a -> a.getValue()));
         Map<Integer, Integer> sortedFiltered = new TreeMap<>(filtered);
@@ -86,6 +84,7 @@ public class ISO8683Parser {
                     prefix = msg.substring(index, index + prefixLength);
                     index = index + prefixLength;
                     Integer prefixVal = Integer.parseInt(prefix);
+                    //Integer prefixVal = calculateLength(prefix,prefixLength);
 
                     if(index + prefixVal > msg.length()){
                         value = msg.substring(index, msg.length());
@@ -114,21 +113,21 @@ public class ISO8683Parser {
                 dataElements.put(id, field);
             }
         }
-        parseDataElementValues();
     }
 
-    public void parseDataElementValues(){
+    public int calculateLength(String prefix, int length) {
+        if(length == 3) {
+            String part1 = prefix.substring(0, 2);
+            String part2 = prefix.substring(2, prefix.length());
 
-    }
+            int val1 = Integer.parseInt(part1);
+            int val2 = Integer.parseInt(part2);
 
-    public int calcPrefix(String prefix) {
-        int val =  0;
-        String res = "";
-        for(int i = 0; i < prefix.length(); i++) {
-            if(prefix.charAt(i) != '0') res += prefix.charAt(i);
+            return val1 + val2;
         }
-        if(!res.isEmpty()) val = Integer.parseInt(res);
-        return val;
+        else{
+            return Integer.parseInt(prefix);
+        }
     }
 
     public void parseBitMap(String binaryBitMap) {
@@ -236,7 +235,6 @@ public class ISO8683Parser {
         else if(MTI.charAt(2) == '8') mti.put("Message function","Reserved by ISO");
         else if(MTI.charAt(2) == '9') mti.put("Message function","Reserved by ISO");
 
-
         if(MTI.charAt(3) == '0') mti.put("Message origin","Acquirer");
         else if(MTI.charAt(3) == '1') mti.put("Message origin","Acquirer repeat");
         else if(MTI.charAt(3) == '2') mti.put("Message origin","Issuer");
@@ -257,11 +255,11 @@ public class ISO8683Parser {
         this.dataElements = dataElements;
     }
 
-    public HashMap<String, String> getMit() {
+    public HashMap<String, String> getMti() {
         return mti;
     }
 
-    public void setMit(HashMap<String, String> mti) {
+    public void setMti(HashMap<String, String> mti) {
         this.mti = mti;
     }
 

@@ -39,12 +39,8 @@ public class Server {
                 // Read a line of data from the client
                 String input = bufferedReader.readLine();
 
-                String[] splts = input.split(";");
-                for(int i = 0; i < splts.length; i++) {
-
-                    System.out.println(splts[i]);
-                    serviceCall(splts[i], clientSocket);
-                }
+                //call the service of parsing
+                serviceCall(input, clientSocket);
             }
             catch(Exception ex){
                 ex.printStackTrace();
@@ -56,16 +52,73 @@ public class Server {
 
         try {
             ISO8683Parser isoParser = new ISO8683Parser();
-            Map<Integer, ISOField> data = isoParser.parseMessage(msg);
+            isoParser.parseMessage(msg);
+            sendToClient(isoParser, clientSocket, msg);
 
+        } catch(Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
+    public void sendToClient(ISO8683Parser isoParser, Socket clientSocket, String msg) {
+        try {
             ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
 
-            oos.writeObject(data);
+            oos.writeObject(isoParser.getDataElements());
             oos.flush();
 
-            oos.writeObject(isoParser.getMit());
-            //oos.flush();
-        } catch(Exception ex){
+            oos.writeObject(isoParser.getMti());
+            oos.flush();
+
+           String mti = msg.substring(0, 4);
+           Map<Integer,ISOField> data = isoParser.getDataElements();
+
+            if(mti.equals("0800")) {
+               mti = "0810";
+               String output;
+               output = mti + msg.substring(4, msg.length());
+
+               BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+               bufferedWriter.write(output);
+               bufferedWriter.newLine();
+               bufferedWriter.flush();
+
+
+               String type = "no value is passed";
+               if(data.containsKey(70)) {
+                   ISOField field = data.get(70);
+                   //Network management messages UseCases
+                   if(field.value.equals("001") || field.value.equals("071") || field.value.equals("061")){
+                       type = "Signon";
+                   }
+                   else if(field.value.equals("002") || field.value.equals("072") || field.value.equals("062")){
+                       type = "Signoff";
+                   }
+                   else if(field.value.equals("301") || field.value.equals("371") || field.value.equals("361")){
+                       type = "EchoTest";
+                   }
+               }
+               bufferedWriter.write(type);
+               bufferedWriter.newLine();
+               bufferedWriter.flush();
+           }
+           //Issuer Reconciliation Advice Messages UseCases
+           else if(mti.equals("0520")) {
+                mti = "0530";
+
+           }
+            //Negative File Update Messages UseCases
+            else if(mti.equals("0300") || mti.equals("0302")) {
+                if(mti.equals("0300"))mti = "0310";
+                else mti = "0312";
+
+            }
+            //Authorization Processor File Update Messages UseCases
+            else if(mti.equals("0382")) {
+                mti = "0392";
+
+            }
+        } catch(Exception ex) {
             ex.printStackTrace();
         }
     }
