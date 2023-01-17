@@ -5,16 +5,17 @@ import java.util.Date;
 
 public class ISO8583Entity {
 
-    private int PAN;
-    private int ProcessingCode;
-    private int AmountTransaction;
-    private int AmountSettlement;
-    private int AmountCardHolderBilling;
+    private String bitmap2;
+    private long PAN;
+    private long ProcessingCode;
+    private long AmountTransaction;
+    private long AmountSettlement;
+    private long AmountCardHolderBilling;
     private Date TransmissionDateTime;
-    private int CardHolderBillingFee;
-    private int ConversionRateSettlement;
-    private int ConversionRateCardHolderBilling;
-    private int SystemTraceAuditNumber;
+    private long CardHolderBillingFee;
+    private long ConversionRateSettlement;
+    private long ConversionRateCardHolderBilling;
+    private long SystemTraceAuditNumber;
     private Time LocalTransactionTime;
     private Date LocalTransactionDate;
     private Date ExpirationDate;
@@ -30,14 +31,14 @@ public class ISO8583Entity {
     private String NetworkInternationalIdentifier;
     private String PointOfServiceConditionCode;
     private String PointOfServiceCaptureCode;
-    private int AuthorizingIdentificationResponseLength;
-    private int AmountTransactionFee;
-    private int AmountSettlementFee;
-    private int AmountTransactionProcessingFee;
-    private int AmountSettlementProcessingFee;
-    private int AcquiringInstitutionIdentificationCode;
-    private int ForwardingInstitutionIdentificationCode;
-    private int PrimaryAccountNumberExtended;
+    private long AuthorizingIdentificationResponseLength;
+    private long AmountTransactionFee;
+    private long AmountSettlementFee;
+    private long AmountTransactionProcessingFee;
+    private long AmountSettlementProcessingFee;
+    private long AcquiringInstitutionIdentificationCode;
+    private long ForwardingInstitutionIdentificationCode;
+    private long PrimaryAccountNumberExtended;
     private String Track2Data;
     private String Track3Data;
     private String RetrievalReferenceNumber;
@@ -72,7 +73,7 @@ public class ISO8583Entity {
     private String MessageNumber;
     private String LastMessageNumber;
     private String ActionDate;
-    private int NumberOfCredits;
+    private long NumberOfCredits;
     private String CreditsReversalNumber;
     private String NumberOfDebits;
     private String DebitsReversalNumber;
@@ -107,43 +108,51 @@ public class ISO8583Entity {
     private String[] ReservedForPrivateUse = new String[8];
     private String MessageAuthenticationCode2;
 
-    public int getPAN() {
+    public String getBitmap2() {
+        return bitmap2;
+    }
+
+    public void setBitmap2(String bitmap2) {
+        this.bitmap2 = bitmap2;
+    }
+
+    public long getPAN() {
         return PAN;
     }
 
-    public void setPAN(int PAN) {
+    public void setPAN(long PAN) {
         this.PAN = PAN;
     }
 
-    public int getProcessingCode() {
+    public long getProcessingCode() {
         return ProcessingCode;
     }
 
-    public void setProcessingCode(int processingCode) {
+    public void setProcessingCode(long processingCode) {
         ProcessingCode = processingCode;
     }
 
-    public int getAmountTransaction() {
+    public long getAmountTransaction() {
         return AmountTransaction;
     }
 
-    public void setAmountTransaction(int amountTransaction) {
+    public void setAmountTransaction(long amountTransaction) {
         AmountTransaction = amountTransaction;
     }
 
-    public int getAmountSettlement() {
+    public long getAmountSettlement() {
         return AmountSettlement;
     }
 
-    public void setAmountSettlement(int amountSettlement) {
+    public void setAmountSettlement(long amountSettlement) {
         AmountSettlement = amountSettlement;
     }
 
-    public int getAmountCardHolderBilling() {
+    public long getAmountCardHolderBilling() {
         return AmountCardHolderBilling;
     }
 
-    public void setAmountCardHolderBilling(int amountCardHolderBilling) {
+    public void setAmountCardHolderBilling(long amountCardHolderBilling) {
         AmountCardHolderBilling = amountCardHolderBilling;
     }
 
@@ -155,35 +164,35 @@ public class ISO8583Entity {
         TransmissionDateTime = transmissionDateTime;
     }
 
-    public int getCardHolderBillingFee() {
+    public long getCardHolderBillingFee() {
         return CardHolderBillingFee;
     }
 
-    public void setCardHolderBillingFee(int cardHolderBillingFee) {
+    public void setCardHolderBillingFee(long cardHolderBillingFee) {
         CardHolderBillingFee = cardHolderBillingFee;
     }
 
-    public int getConversionRateSettlement() {
+    public long getConversionRateSettlement() {
         return ConversionRateSettlement;
     }
 
-    public void setConversionRateSettlement(int conversionRateSettlement) {
+    public void setConversionRateSettlement(long conversionRateSettlement) {
         ConversionRateSettlement = conversionRateSettlement;
     }
 
-    public int getConversionRateCardHolderBilling() {
+    public long getConversionRateCardHolderBilling() {
         return ConversionRateCardHolderBilling;
     }
 
-    public void setConversionRateCardHolderBilling(int conversionRateCardHolderBilling) {
+    public void setConversionRateCardHolderBilling(long conversionRateCardHolderBilling) {
         ConversionRateCardHolderBilling = conversionRateCardHolderBilling;
     }
 
-    public int getSystemTraceAuditNumber() {
+    public long getSystemTraceAuditNumber() {
         return SystemTraceAuditNumber;
     }
 
-    public void setSystemTraceAuditNumber(int systemTraceAuditNumber) {
+    public void setSystemTraceAuditNumber(long systemTraceAuditNumber) {
         SystemTraceAuditNumber = systemTraceAuditNumber;
     }
 
@@ -307,67 +316,67 @@ public class ISO8583Entity {
         PointOfServiceCaptureCode = pointOfServiceCaptureCode;
     }
 
-    public int getAuthorizingIdentificationResponseLength() {
+    public long getAuthorizingIdentificationResponseLength() {
         return AuthorizingIdentificationResponseLength;
     }
 
-    public void setAuthorizingIdentificationResponseLength(int authorizingIdentificationResponseLength) {
+    public void setAuthorizingIdentificationResponseLength(long authorizingIdentificationResponseLength) {
         AuthorizingIdentificationResponseLength = authorizingIdentificationResponseLength;
     }
 
-    public int getAmountTransactionFee() {
+    public long getAmountTransactionFee() {
         return AmountTransactionFee;
     }
 
-    public void setAmountTransactionFee(int amountTransactionFee) {
+    public void setAmountTransactionFee(long amountTransactionFee) {
         AmountTransactionFee = amountTransactionFee;
     }
 
-    public int getAmountSettlementFee() {
+    public long getAmountSettlementFee() {
         return AmountSettlementFee;
     }
 
-    public void setAmountSettlementFee(int amountSettlementFee) {
+    public void setAmountSettlementFee(long amountSettlementFee) {
         AmountSettlementFee = amountSettlementFee;
     }
 
-    public int getAmountTransactionProcessingFee() {
+    public long getAmountTransactionProcessingFee() {
         return AmountTransactionProcessingFee;
     }
 
-    public void setAmountTransactionProcessingFee(int amountTransactionProcessingFee) {
+    public void setAmountTransactionProcessingFee(long amountTransactionProcessingFee) {
         AmountTransactionProcessingFee = amountTransactionProcessingFee;
     }
 
-    public int getAmountSettlementProcessingFee() {
+    public long getAmountSettlementProcessingFee() {
         return AmountSettlementProcessingFee;
     }
 
-    public void setAmountSettlementProcessingFee(int amountSettlementProcessingFee) {
+    public void setAmountSettlementProcessingFee(long amountSettlementProcessingFee) {
         AmountSettlementProcessingFee = amountSettlementProcessingFee;
     }
 
-    public int getAcquiringInstitutionIdentificationCode() {
+    public long getAcquiringInstitutionIdentificationCode() {
         return AcquiringInstitutionIdentificationCode;
     }
 
-    public void setAcquiringInstitutionIdentificationCode(int acquiringInstitutionIdentificationCode) {
+    public void setAcquiringInstitutionIdentificationCode(long acquiringInstitutionIdentificationCode) {
         AcquiringInstitutionIdentificationCode = acquiringInstitutionIdentificationCode;
     }
 
-    public int getForwardingInstitutionIdentificationCode() {
+    public long getForwardingInstitutionIdentificationCode() {
         return ForwardingInstitutionIdentificationCode;
     }
 
-    public void setForwardingInstitutionIdentificationCode(int forwardingInstitutionIdentificationCode) {
+    public void setForwardingInstitutionIdentificationCode(long forwardingInstitutionIdentificationCode) {
         ForwardingInstitutionIdentificationCode = forwardingInstitutionIdentificationCode;
     }
 
-    public int getPrimaryAccountNumberExtended() {
+    public long getPrimaryAccountNumberExtended() {
         return PrimaryAccountNumberExtended;
     }
 
-    public void setPrimaryAccountNumberExtended(int primaryAccountNumberExtended) {
+    public void setPrimaryAccountNumberExtended(long primaryAccountNumberExtended) {
         PrimaryAccountNumberExtended = primaryAccountNumberExtended;
     }
 
@@ -643,11 +652,11 @@ public class ISO8583Entity {
         ActionDate = actionDate;
     }
 
-    public int getNumberOfCredits() {
+    public long getNumberOfCredits() {
         return NumberOfCredits;
     }
 
-    public void setNumberOfCredits(int numberOfCredits) {
+    public void setNumberOfCredits(long numberOfCredits) {
         NumberOfCredits = numberOfCredits;
     }
 
