@@ -11,24 +11,26 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-public class ISO8683Parser {
+public class ISO8683Decoder {
 
     private Map<Integer, ISOField> dataElements;
     private HashMap<String,String> mti;
     private HashMap<Integer,Integer> bitMapper;
     private HashMap<Integer,String> fieldsDescriptionMapper;
     private HashMap<Integer,ISOField> fieldsProperties;
+    private HashMap<Integer,String> messageTypesMapper;
     private ISO8583Entity entity = new ISO8583Entity();
 
 
     public void parseMessage(String message) {
 
         // Initialize empty maps to store data and meta-data
-        mti = new HashMap<String, String>();
-        bitMapper = new HashMap<Integer, Integer>();
-        fieldsDescriptionMapper = new HashMap<Integer, String>();
-        fieldsProperties = new HashMap<Integer, ISOField>();
-        dataElements = new TreeMap<Integer, ISOField>();
+        mti = new HashMap<>();
+        bitMapper = new HashMap<>();
+        fieldsDescriptionMapper = new HashMap<>();
+        fieldsProperties = new HashMap<>();
+        dataElements = new TreeMap<>();
+        messageTypesMapper = new HashMap<>();
 
         // First, extract the message header and the bitmap from the message
         String MTI = message.substring(0, 4);
@@ -43,8 +45,8 @@ public class ISO8683Parser {
             binaryString = strToBinary(bitMap);
         }
 
-        fieldsDescriptionMapper = Initializer.initializeFieldsMapper();
         fieldsProperties = Initializer.initializeFieldProperties();
+        messageTypesMapper = Initializer.initializeMessageTypes();
 
         parseBitMap(binaryString);
 
@@ -53,7 +55,7 @@ public class ISO8683Parser {
         decodeMessage(message,index);
     }
 
-    public void decodeMessage(String msg, int index){
+    private void decodeMessage(String msg, int index){
 
         //filter key-value mappers according to value = 1
         Map<Integer,Integer> filtered = bitMapper.entrySet().stream().filter(a->a.getValue().intValue() == 1).collect(Collectors.toMap(a-> a.getKey(), a -> a.getValue()));
@@ -120,7 +122,7 @@ public class ISO8683Parser {
         }
     }
 
-    public int calculateLength(String prefix, int length) {
+    private int calculateLength(String prefix, int length) {
         if(length == 3) {
             String part1 = prefix.substring(0, 2);
             String part2 = prefix.substring(2, prefix.length());
@@ -135,7 +137,7 @@ public class ISO8683Parser {
         }
     }
 
-    public void parseBitMap(String binaryBitMap) {
+    private void parseBitMap(String binaryBitMap) {
 
        for(int i = 1; i < binaryBitMap.length(); i++) {
             if(binaryBitMap.charAt(i-1) == '1') bitMapper.put(i,1);
@@ -143,7 +145,7 @@ public class ISO8683Parser {
        }
     }
 
-    public String strToBinary(String s)
+    private String strToBinary(String s)
     {
         // variable to store the converted
         // Binary Sequence
@@ -155,7 +157,7 @@ public class ISO8683Parser {
 
         // initializing the HashMap class
         HashMap<Character, String> hashMap
-                = new HashMap<Character, String>();
+                = new HashMap<>();
 
         // storing the key value pairs
         hashMap.put('0', "0000");
@@ -206,7 +208,7 @@ public class ISO8683Parser {
         return binary;
     }
 
-    public void parseMTI(String MTI) {
+    private void parseMTI(String MTI) {
         if (MTI.charAt(0) == '0')  mti.put("ISO Version","ISO 8583:1987");
         else if(MTI.charAt(0) == '1') mti.put("ISO Version","ISO 8583:1993");
         else if(MTI.charAt(0) == '2') mti.put("ISO Version","ISO 8583:2003");
@@ -251,7 +253,7 @@ public class ISO8683Parser {
         else if(MTI.charAt(3) == '8') mti.put("Message origin","Reserved by ISO");
         else if(MTI.charAt(3) == '9') mti.put("Message origin","Reserved by ISO");
     }
-    public void parseMessageValues(ISO8683Parser isoParser){
+    public void parseMessageValues(ISO8683Decoder isoParser){
         Map<Integer,ISOField> data = isoParser.getDataElements();
 
         if(data.get(1) != null) {
@@ -649,5 +651,13 @@ public class ISO8683Parser {
 
     public void setEntity(ISO8583Entity entity) {
         this.entity = entity;
+    }
+
+    public HashMap<Integer, String> getMessageTypesMapper() {
+        return messageTypesMapper;
+    }
+
+    public void setMessageTypesMapper(HashMap<Integer, String> messageTypesMapper) {
+        this.messageTypesMapper = messageTypesMapper;
     }
 }
