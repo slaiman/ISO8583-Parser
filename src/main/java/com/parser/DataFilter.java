@@ -3,18 +3,18 @@ package com.parser;
 import com.entities.ISOField;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class DataFilter {
 
-    public static Map<Integer, ISOField> filterData(Map<Integer,ISOField> data, HashSet<Integer> output100 ){
-        HashSet<Integer> removedData = new HashSet<>();
-        for(Map.Entry<Integer,ISOField> entry : data.entrySet()) {
-            if(!output100.contains(entry.getKey())) removedData.add(entry.getKey());
+    public static TreeMap<Integer, ISOField> filterData(Map<Integer,ISOField> data, TreeSet<Integer> output100 ){
+        TreeMap<Integer,ISOField> choosedData = new TreeMap<>();
+
+        for(Integer entry : output100) {
+            if(data.containsKey(entry)) choosedData.put(entry,data.get(entry));
         }
-        for(Integer elem : removedData){
-            data.remove(elem);
-        }
-        return data;
+        return choosedData;
     }
 
 }

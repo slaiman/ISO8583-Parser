@@ -4,6 +4,7 @@ import com.entities.ISOField;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeSet;
 
 public class Initializer {
 
@@ -935,7 +936,7 @@ public class Initializer {
         messageTypes.put(212,	"Financial transaction completion response");
         messageTypes.put(220,	"Financial transaction advice");
         messageTypes.put(221,	"Financial transaction advice repeat");
-        messageTypes.put(222,	"Financial transaction advice completion confirmati");
+        messageTypes.put(222,	"Financial transaction advice completion confirmation");
         messageTypes.put(223,	"Financial txn advice completion confirmation rpt");
         messageTypes.put(230,	"Financial txn advice response");
         messageTypes.put(232,	"Financial txn advice completion response");
@@ -986,8 +987,8 @@ public class Initializer {
         return messageTypes;
     }
 
-    public static HashSet<Integer> initializeData100() {
-        HashSet<Integer> data = new HashSet<>();
+    public static TreeSet<Integer> initializeData100() {
+        TreeSet<Integer> data = new TreeSet<>();
         data.add(1);
         data.add(2);
         data.add(3);
@@ -1070,8 +1071,8 @@ public class Initializer {
 
         return data;
     }
-    public static HashSet<Integer> initializeData101() {
-        HashSet<Integer> data = new HashSet<>();
+    public static TreeSet<Integer> initializeData101() {
+        TreeSet<Integer> data = new TreeSet<>();
         data.add(1);
         data.add(3);
         data.add(4);
@@ -1102,8 +1103,8 @@ public class Initializer {
 
         return data;
     }
-    public static HashSet<Integer> initializeData120() {
-        HashSet<Integer> data = new HashSet<>();
+    public static TreeSet<Integer> initializeData120() {
+        TreeSet<Integer> data = new TreeSet<>();
         data.add(3);
         data.add(4);
         data.add(5);
@@ -1130,6 +1131,276 @@ public class Initializer {
         data.add(64);
         data.add(128);
 
+        return data;
+    }
+    public static TreeSet<Integer> initializeData200() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(2);
+        data.add(3);
+        data.add(4);
+        data.add(5);
+        data.add(6);
+        data.add(7);
+        data.add(8);
+        data.add(9);
+        data.add(10);
+        data.add(11);
+        data.add(12);
+        data.add(13);
+        data.add(14);
+        data.add(15);
+        data.add(16);
+        data.add(18);
+        data.add(19);
+        data.add(20);
+        data.add(21);
+        data.add(22);
+        data.add(23);
+        data.add(25);
+        data.add(28);
+        data.add(29);
+        data.add(30);
+        data.add(31);
+        data.add(32);
+        data.add(33);
+        data.add(34);
+        data.add(35);
+        data.add(36);
+        data.add(37);
+        data.add(38);
+        data.add(39);
+        data.add(40);
+        data.add(41);
+        data.add(42);
+        data.add(43);
+        data.add(44);
+        data.add(45);
+        data.add(46);
+        data.add(47);
+        data.add(48);
+        data.add(49);
+        data.add(50);
+        data.add(51);
+        data.add(53);
+        data.add(54);
+        data.add(55);
+        data.add(58);
+        data.add(59);
+        data.add(61);
+        data.add(63);
+        data.add(67);
+        data.add(98);
+        data.add(100);
+        data.add(102);
+        data.add(103);
+        data.add(104);
+        data.add(105);
+        data.add(106);
+        data.add(107);
+        data.add(108);
+        data.add(109);
+        data.add(110);
+        data.add(111);
+        data.add(113);
+        data.add(114);
+        data.add(120);
+        data.add(122);
+        data.add(123);
+        data.add(124);
+        data.add(125);
+        data.add(126);
+        data.add(127);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData220() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(3);
+        data.add(4);
+        data.add(5);
+        data.add(7);
+        data.add(9);
+        data.add(11);
+        data.add(12);
+        data.add(13);
+        data.add(14);
+        data.add(15);
+        data.add(28);
+        data.add(29);
+        data.add(37);
+        data.add(38);
+        data.add(39);
+        data.add(44);
+        data.add(46);
+        data.add(49);
+        data.add(50);
+        data.add(53);
+        data.add(55);
+        data.add(58);
+        data.add(61);
+        data.add(63);
+        data.add(64);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData300() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(2);
+        data.add(7);
+        data.add(11);
+        data.add(14);
+        data.add(23);
+        data.add(34);
+        data.add(39);
+        data.add(44);
+        data.add(53);
+        data.add(61);
+        data.add(64);
+        data.add(91);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData302() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(2);
+        data.add(7);
+        data.add(11);
+        data.add(14);
+        data.add(23);
+        data.add(34);
+        data.add(39);
+        data.add(44);
+        data.add(53);
+        data.add(62);
+        data.add(64);
+        data.add(91);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData382() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(7);
+        data.add(11);
+        data.add(39);
+        data.add(53);
+        data.add(62);
+        data.add(64);
+        data.add(91);
+        data.add(101);
+        data.add(113);
+        data.add(124);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData420() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(3);
+        data.add(4);
+        data.add(5);
+        data.add(7);
+        data.add(9);
+        data.add(11);
+        data.add(12);
+        data.add(13);
+        data.add(15);
+        data.add(28);
+        data.add(29);
+        data.add(37);
+        data.add(38);
+        data.add(39);
+        data.add(44);
+        data.add(46);
+        data.add(49);
+        data.add(50);
+        data.add(53);
+        data.add(55);
+        data.add(56);
+        data.add(58);
+        data.add(61);
+        data.add(63);
+        data.add(64);
+        data.add(90);
+        data.add(95);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData520() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(7);
+        data.add(11);
+        data.add(15);
+        data.add(50);
+        data.add(53);
+        data.add(64);
+        data.add(66);
+        data.add(97);
+        data.add(99);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData522() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(7);
+        data.add(11);
+        data.add(15);
+        data.add(50);
+        data.add(53);
+        data.add(64);
+        data.add(66);
+        data.add(97);
+        data.add(99);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData600601() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(7);
+        data.add(11);
+        data.add(39);
+        data.add(70);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData600800() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(7);
+        data.add(11);
+        data.add(39);
+        data.add(53);
+        data.add(70);
+        data.add(124);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData600810() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(7);
+        data.add(11);
+        data.add(39);
+        data.add(44);
+        data.add(53);
+        data.add(70);
+        data.add(128);
+        return data;
+    }
+    public static TreeSet<Integer> initializeData800() {
+        TreeSet<Integer> data = new TreeSet<>();
+        data.add(1);
+        data.add(7);
+        data.add(11);
+        data.add(39);
+        data.add(53);
+        data.add(70);
         return data;
     }
 }
