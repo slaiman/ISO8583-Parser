@@ -332,7 +332,6 @@ public class Server {
                             response = "0610";
                         }
                     }
-
                 }
                 output = "Content: "+response + rawData;
                 bufferedWriter.write(output);
@@ -343,167 +342,202 @@ public class Server {
             else if(mti.equals("0800") || mti.equals("0820")) {
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
                 String rawData = "";
-                String output;
+                String output = "";
                 String type = "";
+                if(data.containsKey(70) && data.get(70) != null) {
+                    ISOField field = data.get(70);
+                    if (mti.equals("0800") && field.value.equals("001")) {
 
-                if(mti.equals("0800") && data.get(70).value.equals("001")) {
-                    type = "Sign on, both issuer and acquirer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
+                        type = "Sign on, both issuer and acquirer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("002")) {
+
+                        type = "Sign off, both issuer and acquirer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("005")) {
+
+                        type = "Special instructions (message to network operator)";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0061")) {
+
+                        type = "Sign on as issuer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0062")) {
+
+                        type = "Sign off as issuer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0071")) {
+
+                        type = "Sign on as acquirer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0072")) {
+
+                        type = "Sign off as acquirer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0101")) {
+
+                        type = "Key change, both issuer and acquirer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0161")) {
+
+                        type = "Issuer key change";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0171")) {
+
+                        type = "Acquirer key change";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0180")) {
+
+                        type = "Issuer/acquirer key change request";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0181")) {
+
+                        type = "Acquirer key change request";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0191")) {
+
+                        type = "Issuer key change request";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0201")) {
+
+                        type = "Initiate cutoff, issuer and acquirer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0202")) {
+
+                        type = "Cutoff complete, issuer and acquirer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0261")) {
+
+                        type = "Initiate cutoff as issuer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0262")) {
+
+                        type = "Cutoff complete as issuer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0271")) {
+
+                        type = "Initiate cutoff as acquirer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0272")) {
+
+                        type = "Cutoff complete as acquirer";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0281")) {
+
+                        type = "Terminal cutoff";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0282")) {
+
+                        type = "Cardholder application cutoff";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0301")) {
+
+                        type = "Echo test (reply required handshake)";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0820") && field.value.equals("0301")) {
+
+                        type = "Echo test (protocol acknowledgment handshake))";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0361")) {
+
+                        type = "Issuer echo test (reply required)";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0820") && field.value.equals("0361")) {
+
+                        type = "Issuer echo test (protocol acknowledgment)";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0800") && field.value.equals("0371")) {
+
+                        type = "Acquirer echo test (reply required)";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } else if (mti.equals("0820") && field.value.equals("0371")) {
+
+                        type = "Acquirer echo test (protocol acknowledgment)";
+                        bufferedWriter.write(type);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+                    }
                 }
-                else if(mti.equals("0800") && data.get(70).value.equals("002")){
-                    type = "Sign off, both issuer and acquirer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("005")){
-                    type = "Special instructions (message to network operator)";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0061")){
-                    type = "Sign on as issuer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0062")){
-                    type = "Sign off as issuer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0071")){
-                    type = "Sign on as acquirer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0072")){
-                    type = "Sign off as acquirer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0101")){
-                    type = "Key change, both issuer and acquirer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0161")){
-                    type = "Issuer key change";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0171")){
-                    type = "Acquirer key change";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0180")){
-                    type = "Issuer/acquirer key change request";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0181")){
-                    type = "Acquirer key change request";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0191")){
-                    type = "Issuer key change request";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0201")){
-                    type = "Initiate cutoff, issuer and acquirer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0202")){
-                    type = "Cutoff complete, issuer and acquirer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0261")){
-                    type = "Initiate cutoff as issuer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0262")){
-                    type = "Cutoff complete as issuer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0271")){
-                    type = "Initiate cutoff as acquirer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0272")){
-                    type = "Cutoff complete as acquirer";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0281")){
-                    type = "Terminal cutoff";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0282")){
-                    type = "Cardholder application cutoff";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0301")){
-                    type = "Echo test (reply required handshake)";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0820") && data.get(70).value.equals("0301")){
-                    type = "Echo test (protocol acknowledgment handshake))";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0361")){
-                    type = "Issuer echo test (reply required)";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0820") && data.get(70).value.equals("0361")){
-                    type = "Issuer echo test (protocol acknowledgment)";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0800") && data.get(70).value.equals("0371")){
-                    type = "Acquirer echo test (reply required)";
-                    bufferedWriter.write(type);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-                }
-                else if(mti.equals("0820") && data.get(70).value.equals("0371")){
-                    type = "Acquirer echo test (protocol acknowledgment)";
+                else {
+                    type = "Network Management Request";
                     bufferedWriter.write(type);
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
@@ -521,16 +555,17 @@ public class Server {
             }
             else{
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                bufferedWriter.newLine();
-                bufferedWriter.write("Content : "+msg);
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
+
                 int val = Integer.parseInt(msg.substring(0,4));
                 if(isoParser.getMessageTypesMapper().containsKey(val)) {
                     bufferedWriter.write(isoParser.getMessageTypesMapper().get(val));
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
                 }
+
+                bufferedWriter.write("Content : "+msg);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
             }
         }catch(Exception ex) {
             ex.printStackTrace();

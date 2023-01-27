@@ -260,7 +260,7 @@ public class ISO8683Decoder {
             entity.setBitmap2(data.get(1).getValue());
         }
         if(data.get(2) != null){
-            entity.setPAN(Long.parseLong(data.get(2).getValue()));
+            entity.setPAN(data.get(2).getValue());
         }
         if(data.get(3) != null){
             entity.setProcessingCode(Long.parseLong(data.get(3).getValue()));

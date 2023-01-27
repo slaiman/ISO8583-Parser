@@ -6,7 +6,7 @@ import java.util.Date;
 public class ISO8583Entity {
 
     private String bitmap2;
-    private long PAN;
+    private String PAN;
     private long ProcessingCode;
     private long AmountTransaction;
     private long AmountSettlement;
@@ -116,11 +116,11 @@ public class ISO8583Entity {
         this.bitmap2 = bitmap2;
     }
 
-    public long getPAN() {
+    public String getPAN() {
         return PAN;
     }
 
-    public void setPAN(long PAN) {
+    public void setPAN(String PAN) {
         this.PAN = PAN;
     }
 
