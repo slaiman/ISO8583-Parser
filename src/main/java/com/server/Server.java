@@ -54,9 +54,9 @@ public class Server {
     }
 
     private void parserCaller(String msg, Socket clientSocket) {
-
+        ISO8683Decoder isoParser = null;
         try {
-            ISO8683Decoder isoParser = new ISO8683Decoder();
+            isoParser = new ISO8683Decoder();
             isoParser.parseMessage(msg);
             sendToClient(isoParser, clientSocket, msg);
             isoParser.parseMessageValues(isoParser);
@@ -64,6 +64,7 @@ public class Server {
 
         } catch(Exception ex){
             ex.printStackTrace();
+            checkScenario(isoParser, clientSocket, msg);
         }
     }
 
