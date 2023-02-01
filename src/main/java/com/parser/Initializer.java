@@ -3,7 +3,6 @@ package com.parser;
 import com.entities.ISOField;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.TreeSet;
 
 public class Initializer {

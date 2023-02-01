@@ -15,31 +15,32 @@ public class ISO8583Encoder {
         for(int i = 1; i <= 128; i++){
             if(i <= 64) {
                 if (fields.containsKey(i)){
-                    bitmap1 += "1";
+                    bitmap1 = bitmap1.concat(String.valueOf(1));
                     if(fields.get(i) != null) {
                         ISOField field = fields.get(i);
                         if (field.type.contains("IFA_LLL") || field.type.contains("IFA_LL")) {
                             int fieldLength = field.actualLength;
                             String strLength = String.valueOf(fieldLength);
-                            dataelements += strLength + field.value;
-                        } else dataelements += field.value;
+                            dataelements = dataelements.concat(strLength + field.value);
+                        }
+                        else dataelements = dataelements.concat(field.value);
                     }
                 }
-                else bitmap1 += "0";
+                else bitmap1 = bitmap1.concat("0");
             }
             else if(bitmap1.charAt(0) == '1'){
                 if (fields.containsKey(i)) {
-                    bitmap2 += "1";
+                    bitmap2 = bitmap2 + "1";
                     if (fields.get(i) != null) {
                         ISOField field = fields.get(i);
                         if (field.type.contains("IFA_LLL") || field.type.contains("IFA_LL")) {
                             int fieldLength = field.actualLength;
                             String strLength = String.valueOf(fieldLength);
-                            dataelements += strLength + field.value;
-                        } else dataelements += field.value;
+                            dataelements = dataelements + strLength + field.value;
+                        } else dataelements = dataelements + field.value;
                     }
                 }
-                else bitmap2 += "0";
+                else bitmap2 = bitmap2 + "0";
             }
             else break;
         }
@@ -81,7 +82,7 @@ public class ISO8583Encoder {
         for (int i = 0; i < s.length(); i += 4) {
             String str = s.substring(i,i+4);
             Character c = hashMap.get(str);
-            hex += c;
+            hex = hex.concat(String.valueOf(c));
         }
         // returning the converted Binary
         return hex;

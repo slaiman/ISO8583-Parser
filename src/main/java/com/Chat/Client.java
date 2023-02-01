@@ -1,4 +1,4 @@
-package com.Socket;
+package com.Chat;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

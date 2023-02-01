@@ -16,7 +16,6 @@ public class ISO8683Decoder {
     private Map<Integer, ISOField> dataElements;
     private HashMap<String,String> mti;
     private HashMap<Integer,Integer> bitMapper;
-    private HashMap<Integer,String> fieldsDescriptionMapper;
     private HashMap<Integer,ISOField> fieldsProperties;
     private HashMap<Integer,String> messageTypesMapper;
     private ISO8583Entity entity = new ISO8583Entity();
@@ -27,7 +26,6 @@ public class ISO8683Decoder {
         // Initialize empty maps to store data and meta-data
         mti = new HashMap<>();
         bitMapper = new HashMap<>();
-        fieldsDescriptionMapper = new HashMap<>();
         fieldsProperties = new HashMap<>();
         dataElements = new TreeMap<>();
         messageTypesMapper = new HashMap<>();
@@ -80,7 +78,7 @@ public class ISO8683Decoder {
                     continue;
                 }
                 if (type.contains("IFA_LLL") || type.contains("IFA_LL")) {
-                    String prefix = "";
+                    String prefix;
                     int prefixLength = 0;
                     if(type.contains("IFA_LLL")) {
                        prefixLength = 3;
@@ -94,7 +92,7 @@ public class ISO8683Decoder {
                     //Integer prefixVal = calculateLength(prefix,prefixLength);
 
                     if(index + prefixVal > msg.length()){
-                        value = msg.substring(index, msg.length());
+                        value = msg.substring(index);
                         field.actualLength = msg.length() - index;
                         index = msg.length();
                     }
@@ -106,7 +104,7 @@ public class ISO8683Decoder {
                 }
                 else {
                     if(index + length > msg.length()){
-                        value = msg.substring(index,msg.length());
+                        value = msg.substring(index);
                         field.actualLength = msg.length() - index;
                         index = msg.length();
                     }
@@ -122,6 +120,7 @@ public class ISO8683Decoder {
         }
     }
 
+    /*
     private int calculateLength(String prefix, int length) {
         if(length == 3) {
             String part1 = prefix.substring(0, 2);
@@ -135,7 +134,7 @@ public class ISO8683Decoder {
         else{
             return Integer.parseInt(prefix);
         }
-    }
+    }*/
 
     private void parseBitMap(String binaryBitMap) {
 
@@ -609,55 +608,11 @@ public class ISO8683Decoder {
         return dataElements;
     }
 
-    public void setDataElements(Map<Integer, ISOField> dataElements) {
-        this.dataElements = dataElements;
-    }
-
     public HashMap<String, String> getMti() {
         return mti;
     }
 
-    public void setMti(HashMap<String, String> mti) {
-        this.mti = mti;
-    }
-
-    public HashMap<Integer, Integer> getBitMapper() {
-        return bitMapper;
-    }
-
-    public void setBitMapper(HashMap<Integer, Integer> bitMapper) {
-        this.bitMapper = bitMapper;
-    }
-
-    public HashMap<Integer, String> getFieldsDescriptionMapper() {
-        return fieldsDescriptionMapper;
-    }
-
-    public void setFieldsDescriptionMapper(HashMap<Integer, String> fieldsDescriptionMapper) {
-        this.fieldsDescriptionMapper = fieldsDescriptionMapper;
-    }
-
-    public HashMap<Integer, ISOField> getFieldsProperties() {
-        return fieldsProperties;
-    }
-
-    public void setFieldsProperties(HashMap<Integer, ISOField> fieldsProperties) {
-        this.fieldsProperties = fieldsProperties;
-    }
-
-    public ISO8583Entity getEntity() {
-        return entity;
-    }
-
-    public void setEntity(ISO8583Entity entity) {
-        this.entity = entity;
-    }
-
     public HashMap<Integer, String> getMessageTypesMapper() {
         return messageTypesMapper;
-    }
-
-    public void setMessageTypesMapper(HashMap<Integer, String> messageTypesMapper) {
-        this.messageTypesMapper = messageTypesMapper;
     }
 }

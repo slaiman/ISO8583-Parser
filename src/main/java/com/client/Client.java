@@ -10,31 +10,13 @@ import java.util.Map;
 
 public class Client {
 
-    int server_port = 6238;
-    InetAddress ip;
-    Socket client;
+    public Client(){ }
 
-    public Client(){
-
-    }
-
-    public Client(int server_port){
-        this.server_port = server_port;
-    }
-
-    public Client(InetAddress ip){
-        this.ip = ip;
-    }
-
-    public Client(InetAddress ip,int server_port){
-        this.ip = ip;
-        this.server_port = server_port;
-    }
-
-    protected void communicateServer(){
+    public void communicateServer(){
         try {
-            ip = InetAddress.getLocalHost();
-            client = new Socket(ip, server_port);
+            int server_port = 6238;
+            InetAddress ip = InetAddress.getLocalHost();
+            Socket client = new Socket(ip, server_port);
 
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -64,7 +46,8 @@ public class Client {
                 //String msg = "021042000400000000021612345678901234560609173030123109789ABC1000123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
                 //String msg = "82220000000000000000000000000000000000001400000004281327100005780428";
                 //String msg = "053082220000000000000000000000000000000000001400000004281327100005780428";
-                String msg = "021097537935601354061000000000000000102449012056560212406905943055212214365014458945238978571478540265036920115233693568741285214569745685418563200530009810025982578895487563269315745894523415947532357215914775312335778995169874563000000001582570000009985563210000745896358125625477856021036500000897400562189500000662000000000320152000000045210";
+                String msg = "08209753793560135406977fffffffff00001024490120565602124069059430552122143650144589452389785714785402650369201152336935687412852145697456854185632005300098100259825788954875632693157458945234159475323572159147753123357789951698745630000000015825700000099855632100007458963581256254778560210365000008974005621895000006620000000003201520000000452100125400983000000074000652100365847111922100001400000000055548159369753321489638426971300000000000000000000000548662297113375915377559988446600331122446523100000078900000000000000000222569874136418919881892652385994922764758930220948662782331102037120784561289456745869401528968520292938445683920975664829384800000000000000000000000004000000000000000000002";
+                //String msg = "08108200000000000000000000000000000010000000000000009430552122";
 
                 bufferedWriter.write(msg);
                 bufferedWriter.newLine();
@@ -86,7 +69,7 @@ public class Client {
                 System.out.println(msg);
 
                 System.out.println();
-                System.out.println("the type and content of message sent from server is : " + msgReceived);
+                System.out.println("the type of message sent from server is : " + msgReceived);
                 System.out.println(msgType);
             }
         }
@@ -100,7 +83,7 @@ public class Client {
             if(field.getValue() != null)
                 System.out.println(field.getKey() + ":      " + field.getValue());
             else
-                System.out.println(field.getKey() + ": " + field.getValue());
+                System.out.println(field.getKey() + ": " + null);
         }
         System.out.println();
     }
@@ -116,7 +99,7 @@ public class Client {
                     System.out.println(field.getKey() + ":      " + field.getValue().getValue() + "      " + field.getValue().getLength() + "       " + field.getValue().getActualLength() + "              " + field.getValue().getType() + "           " + field.getValue().getName());
             }
             else
-                System.out.println(field.getKey() + ": " + field.getValue());
+                System.out.println(field.getKey() + ": " + null);
         }
     }
 }
