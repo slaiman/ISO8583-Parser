@@ -11,7 +11,7 @@ public class StatementResponseEntity {
     public String customer_code;
     public String customerId;
     public ArrayList<String> errorCodes;
-    public String errorDescriptio;
+    public String errorDescription;
     public String fieldDetails;
     public HashMap hashMap;
     public String logId;

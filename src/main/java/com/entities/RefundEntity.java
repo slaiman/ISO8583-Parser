@@ -2,7 +2,7 @@ package com.entities;
 
 public class RefundEntity {
 
-    public int apiRequest;
+    public String apiRequest;
     public String cardNumber;
     public String transDate;
     public String transAmount;

@@ -77,7 +77,7 @@ public class ISO8683Decoder {
                     dataElements.put(id, null);
                     continue;
                 }
-                if (type.contains("IFA_LLL") || type.contains("IFA_LL")) {
+                if (!type.equals("IFA_LLCHAR") && (type.contains("IFA_LLL") || type.contains("IFA_LL"))) {
                     String prefix;
                     int prefixLength = 0;
                     if(type.contains("IFA_LLL")) {
@@ -88,7 +88,11 @@ public class ISO8683Decoder {
                     }
                     prefix = msg.substring(index, index + prefixLength);
                     index = index + prefixLength;
-                    Integer prefixVal = Integer.parseInt(prefix);
+                    Integer prefixVal = 0;
+                    if(prefix != null && !prefix.isEmpty() && !prefix.equals(" ")) {
+                        prefixVal = Integer.parseInt(prefix);
+                    }
+                    else prefixVal = msg.length() - index;
                     //Integer prefixVal = calculateLength(prefix,prefixLength);
 
                     if(index + prefixVal > msg.length()){
@@ -119,22 +123,6 @@ public class ISO8683Decoder {
             }
         }
     }
-
-    /*
-    private int calculateLength(String prefix, int length) {
-        if(length == 3) {
-            String part1 = prefix.substring(0, 2);
-            String part2 = prefix.substring(2, prefix.length());
-
-            int val1 = Integer.parseInt(part1);
-            int val2 = Integer.parseInt(part2);
-
-            return val1 + val2;
-        }
-        else{
-            return Integer.parseInt(prefix);
-        }
-    }*/
 
     private void parseBitMap(String binaryBitMap) {
 

@@ -3,6 +3,7 @@ package com.parser;
 import com.entities.ISOField;
 
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class Initializer {
@@ -1400,6 +1401,72 @@ public class Initializer {
         data.add(39);
         data.add(53);
         data.add(70);
+        return data;
+    }
+
+    public static TreeMap<String,String> initializeErrorCodes(){
+        TreeMap<String, String> data = new TreeMap<>();
+        data.put("03", "Invalid Merchant");
+        data.put("05", "Do Not Honour");
+        data.put("06", "Error");
+        data.put("07", "Pick up card, special condition");
+        data.put("12", "Invalid Transaction");
+        data.put("13", "Invalid Amount");
+        data.put("14", "Invalid Card Number");
+        data.put("15", "No Such Issuer");
+        data.put("20","Invalid Response");
+        data.put("22","Suspected Malfunction");
+        data.put("23","Unacceptable Transaction Fee");
+        data.put("24","File Update Not Supported");
+        data.put("25","Unable to Locate Record");
+        data.put("26","Duplicate Record");
+        data.put("27","File Update Field Edit Error");
+        data.put("28","File Update File Locked");
+        data.put("29","File Update Failed");
+        data.put("30","Format Error");
+        data.put("31","Bank Not Supported by Switch");
+        data.put("33","Expired Card, Pick-Up");
+        data.put("34","Suspected Fraud, Pick-Up");
+        data.put("36","Restricted Card, Pick-Up");
+        data.put("38","PIN Tries Exceeded, Pick-Up");
+        data.put("39","No Credit Account");
+        data.put("40","Function Not Supported");
+        data.put("41","Lost Card, Pick-Up");
+        data.put("42","No Universal Account");
+        data.put("43","Stolen Card, Pick-Up");
+        data.put("44","No Investment Account");
+        data.put("51","Not Enough Funds");
+        data.put("52","No Cheque Account");
+        data.put("53","No Savings Account");
+        data.put("54","Expired Card");
+        data.put("55","Incorrect PIN");
+        data.put("56","No Card Record");
+        data.put("57","Transaction Not Permitted to Cardholder");
+        data.put("58","Transaction Not Permitted to Terminal");
+        data.put("59","Suspected Fraud");
+        data.put("61","Exceeds Withdrawal Limit");
+        data.put("62","Restricted Card");
+        data.put("63","Security Violation");
+        data.put("64","Original Amount Incorrect");
+        data.put("65","Exceeds withdrawal frequency");
+        data.put("68","Response Received Too Late");
+        data.put("75","PIN Tries Exceeded");
+        data.put("76","Key Synchronization Error");
+        data.put("78","Customer Not Eligible For POS");
+        data.put("79","Invalid Digital Signature");
+        data.put("82","Count Exceeds Limit");
+        data.put("84","Time Limit For Pre-Authorization Reached");
+        data.put("86","Cannot Verify PIN");
+        data.put("88","Information Not On File");
+        data.put("89","Card Verification Value Verification Failed");
+        data.put("91", "Issuer or Switch is Inoperative");
+        data.put("92","Route Destination Not Found for Routing");
+        data.put("93","Transaction Cannot Be Completed");
+        data.put("95","Reconcile Error");
+        data.put("96","System Malfunction");
+        data.put("97","Reconcile Total Not Equals Batch Total");
+        data.put("98","MAC Error");
+        data.put("99","Reset MAC Key");
         return data;
     }
 }

@@ -18,7 +18,7 @@ public class ISO8583Encoder {
                     bitmap1 = bitmap1.concat(String.valueOf(1));
                     if(fields.get(i) != null) {
                         ISOField field = fields.get(i);
-                        if (field.type.contains("IFA_LLL") || field.type.contains("IFA_LL")) {
+                        if (field.type != null && !field.type.isEmpty() && (field.type.contains("IFA_LLL") || field.type.contains("IFA_LL"))) {
                             int fieldLength = field.actualLength;
                             String strLength = String.valueOf(fieldLength);
                             dataelements = dataelements.concat(strLength + field.value);

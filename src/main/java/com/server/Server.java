@@ -63,7 +63,7 @@ public class Server {
             isoParser = new ISO8683Decoder();
             isoParser.parseMessage(msg);
             sendToClient(isoParser, clientSocket);
-            isoParser.parseMessageValues(isoParser);
+            //isoParser.parseMessageValues(isoParser);
             checkScenario(isoParser, clientSocket, msg);
 
         } catch(Exception ex){
@@ -106,7 +106,7 @@ public class Server {
                         if(processingCode != null && !processingCode.isEmpty()) {
                             if (processingCode.length() == 6 && processingCode.startsWith("20")) {
                                 //prepare and extract the variables for the call of service
-                                int apiRequest;
+                                String apiRequest;
                                 String cardNumber = "";
                                 String amount = "";
                                 String currencyCode = "";
@@ -115,57 +115,58 @@ public class Server {
                                 String AuthCode = "";
                                 String transactionFee = "";
 
-                                Random rand = new Random();
-                                int upperBound = 1000000000;
-                                apiRequest = rand.nextInt(upperBound);
+                                String sessionId = callLogin();
+                                if(!sessionId.isEmpty()) {
+                                    Random rand = new Random();
+                                    int upperBound = 1000000000;
+                                    apiRequest = String.valueOf(rand.nextInt(upperBound));
 
-                                if (data.containsKey(23) && data.get(23) != null) {
-                                    cardNumber = data.get(23).value;
-                                }
-                                if (data.containsKey(4) && data.get(4) != null) {
-                                    amount = data.get(4).value;
-                                }
-                                if (data.containsKey(49) && data.get(49) != null) {
-                                    currencyCode = data.get(49).value;
-                                }
-                                if (data.containsKey(37) && data.get(37) != null) {
-                                    reference = data.get(37).value;
-                                }
-                                if (data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null) {
-                                    String t = data.get(12).value;
-                                    if(t.length() == 6)t = t.substring(0,2) + ":" + t.substring(2,4) + ":" + t.substring(4);
-                                    String d = data.get(13).value;
-                                    if(d.length() == 4)d = d.substring(0,2) + ":" + d.substring(2);
-                                    date = d + " " + t;
-                                }
-                                if (data.containsKey(28) && data.get(28) != null) {
-                                    transactionFee = data.get(28).value;
-                                }
-                                if (data.containsKey(38) && data.get(38) != null) {
-                                    AuthCode = data.get(38).value;
-                                }
+                                    if (data.containsKey(23) && data.get(23) != null) {
+                                        cardNumber = data.get(23).value;
+                                    }
+                                    if (data.containsKey(4) && data.get(4) != null) {
+                                        amount = data.get(4).value;
+                                    }
+                                    if (data.containsKey(49) && data.get(49) != null) {
+                                        currencyCode = data.get(49).value;
+                                    }
+                                    if (data.containsKey(37) && data.get(37) != null) {
+                                        reference = data.get(37).value;
+                                    }
+                                    if (data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null) {
+                                        String t = data.get(12).value;
+                                        if (t.length() == 6)
+                                            t = t.substring(0, 2) + ":" + t.substring(2, 4) + ":" + t.substring(4);
+                                        String d = data.get(13).value;
+                                        if (d.length() == 4) d = d.substring(0, 2) + ":" + d.substring(2);
+                                        date = d + " " + t;
+                                    }
+                                    if (data.containsKey(28) && data.get(28) != null) {
+                                        transactionFee = data.get(28).value;
+                                    }
+                                    if (data.containsKey(38) && data.get(38) != null) {
+                                        AuthCode = data.get(38).value;
+                                    }
+                                    RefundEntity refund = new RefundEntity();
+                                    refund.apiRequest = apiRequest;
+                                    refund.cardNumber = cardNumber = "200";
+                                    refund.transDate = date;
+                                    refund.transAmount = amount;
+                                    refund.currency = currencyCode = "550";
+                                    refund.referenceNo = reference;
+                                    refund.transactionFee = transactionFee = "490";
+                                    refund.authCode = AuthCode;
 
-                                RefundEntity refund = new RefundEntity();
-                                refund.apiRequest = apiRequest;
-                                refund.cardNumber = cardNumber = "200";
-                                refund.transDate = date;
-                                refund.transAmount = amount;
-                                refund.currency = currencyCode = "550";
-                                refund.referenceNo = reference;
-                                refund.transactionFee = transactionFee = "490";
-                                refund.authCode = AuthCode;
+                                    String server = "136.232.232.118";
+                                    String port = "9090";
+                                    String url = "http://" + server + ":" + port + "/NIBServer/Account/PosReversal";
 
-
-
-                                String server = "136.232.232.118";
-                                String port = "9090";
-                                String url = "http://"+ server + ":" + port + "/NIBServer/Account/PosReversal";
-
-                                String result = sendRefundHTTPRequest(url,refund);
-                                RefundResponseEntity refundResponseEntity = new RefundResponseEntity();
-                                refundResponseEntity = new ObjectMapper().readValue(result, RefundResponseEntity.class);
-                                System.out.println(result);
-                                response = refundResponseEntity.errorCode;
+                                    String result = sendRefundHTTPRequest(url, refund, sessionId);
+                                    RefundResponseEntity refundResponseEntity = new RefundResponseEntity();
+                                    refundResponseEntity = new ObjectMapper().readValue(result, RefundResponseEntity.class);
+                                    System.out.println(result);
+                                    response = refundResponseEntity.errorDescription;
+                                }
                             }
                         }
                     }
@@ -176,6 +177,17 @@ public class Server {
 
                     TreeSet<Integer> output100 = Initializer.initializeData100();
                     filteredData = DataFilter.filterData(data,output100);
+                    if(filteredData.containsKey(39)) {
+                        ISOField field = filteredData.get(39);
+                        field.value = response;
+                        filteredData.put(39, field);
+                    }
+                    else{
+                        ISOField field = new ISOField();
+                        field.id = 39;
+                        field.value = response;
+                        filteredData.put(39,field);
+                    }
                     ISO8583Encoder iso8583Encoder = new ISO8583Encoder();
                     rawData = iso8583Encoder.encodeMessage(filteredData);
                     response = "0110";
@@ -214,45 +226,50 @@ public class Server {
                         if(processingCode != null && !processingCode.isEmpty()){
                             if(processingCode.length() == 6 && processingCode.startsWith("31")) {
                                 //prepare variables for the call of service
-                                int apiRequest;
+                                String apiRequest;
                                 String accountNumber = "";
                                 String reference = "";
                                 String date = "";
 
-                                Random rand = new Random();
-                                int upperBound = 1000000000;
-                                apiRequest = rand.nextInt(upperBound);
+                                String sessionId = callLogin();
+                                if(!sessionId.isEmpty()) {
 
-                                if(data.containsKey(2) && data.get(2) != null) {
-                                    accountNumber = data.get(2).value;
+                                    Random rand = new Random();
+                                    int upperBound = 1000000000;
+                                    apiRequest = String.valueOf(rand.nextInt(upperBound));
+
+                                    if (data.containsKey(2) && data.get(2) != null) {
+                                        accountNumber = data.get(2).value;
+                                    }
+                                    if (data.containsKey(37) && data.get(37) != null) {
+                                        reference = data.get(37).value;
+                                    }
+                                    if (data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null) {
+                                        String t = data.get(12).value;
+                                        if (t.length() == 6)
+                                            t = t.substring(0, 2) + ":" + t.substring(2, 4) + ":" + t.substring(4);
+                                        String d = data.get(13).value;
+                                        if (d.length() == 4) d = d.substring(0, 2) + ":" + d.substring(2);
+                                        date = d + " " + t;
+                                    }
+
+                                    BalanceInquiryEntity balanceInquiryEntity = new BalanceInquiryEntity();
+                                    balanceInquiryEntity.apiRequestId = apiRequest;
+                                    balanceInquiryEntity.reference = reference;
+                                    balanceInquiryEntity.transDate = date;
+                                    balanceInquiryEntity.accountNo = accountNumber;
+
+
+                                    String server = "136.232.232.118";
+                                    String port = "9090";
+                                    String url = "http://" + server + ":" + port + "/NIBServer/Account/checkAvailableBalanceAmtOnly";
+
+                                    String result = sendBalanceInquiryHTTPRequest(url, balanceInquiryEntity);
+                                    BalanceInquiryResponseEntity balanceInquiryResponseEntity = new BalanceInquiryResponseEntity();
+                                    balanceInquiryResponseEntity = new ObjectMapper().readValue(result, BalanceInquiryResponseEntity.class);
+                                    System.out.println(result);
+                                    response = balanceInquiryResponseEntity.errorDescription;
                                 }
-                                if(data.containsKey(37) && data.get(37) != null){
-                                    reference = data.get(37).value;
-                                }
-                                if(data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null){
-                                    String t = data.get(12).value;
-                                    if(t.length() == 6)t = t.substring(0,2) + ":" + t.substring(2,4) + ":" + t.substring(4);
-                                    String d = data.get(13).value;
-                                    if(d.length() == 4)d = d.substring(0,2) + ":" + d.substring(2);
-                                    date = d + " " + t;
-                                }
-
-                                BalanceInquiryEntity balanceInquiryEntity = new BalanceInquiryEntity();
-                                balanceInquiryEntity.apiRequestId = apiRequest;
-                                balanceInquiryEntity.reference = reference;
-                                balanceInquiryEntity.transDate = date;
-                                balanceInquiryEntity.accountNo = accountNumber;
-
-
-                                String server = "136.232.232.118";
-                                String port = "9090";
-                                String url = "http://"+ server + ":" + port + "/NIBServer/Account/checkAvailableBalanceAmtOnly";
-
-                                String result = sendBalanceInquiryHTTPRequest(url,balanceInquiryEntity);
-                                BalanceInquiryResponseEntity balanceInquiryResponseEntity = new BalanceInquiryResponseEntity();
-                                balanceInquiryResponseEntity = new ObjectMapper().readValue(result, BalanceInquiryResponseEntity.class);
-                                System.out.println(result);
-                                response = balanceInquiryResponseEntity.errorCode;
                             }
                             else if(processingCode.length() == 6 && processingCode.startsWith("91")){
                                 //prepare variables for the call of service
@@ -265,103 +282,126 @@ public class Server {
                                 String toDate = "";
                                 String creditOrDebitIndicator = "";
 
-                                if(data.containsKey(102) && data.get(102) != null) {
-                                    customerId = data.get(102).value;
-                                }
-                                if(data.containsKey(2) && data.get(2) != null) {
-                                    accountNumber = data.get(2).value;
-                                }
-                                if(data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null){
-                                    String t = data.get(12).value;
-                                    if(t.length() == 6)t = t.substring(0,2) + ":" + t.substring(2,4) + ":" + t.substring(4);
-                                    String d = data.get(13).value;
-                                    if(d.length() == 4)d = d.substring(0,2) + ":" + d.substring(2);
-                                    fromDate = d + " " + t;
-                                }
-                                if(data.containsKey(14) && data.containsKey(12) && data.get(14) != null && data.get(12) != null) {
-                                    String t = data.get(12).value;
-                                    if(t.length() == 6)t = t.substring(0,2) + ":" + t.substring(2,4) + ":" + t.substring(4);
-                                    String d = data.get(14).value;
-                                    if(d.length() == 4) d = d.substring(0,2) + ":" + d.substring(4);
-                                    toDate = d + " " + t;
-                                }
+                                String sessionId = callLogin();
+                                if(!sessionId.isEmpty()) {
 
-                                StatementEntity statementEntity = new StatementEntity();
-                                statementEntity.accountNo = accountNumber;
-                                statementEntity.customerId = customerId;
-                                statementEntity.fromDate = fromDate;
-                                statementEntity.toDate = toDate;
+                                    if (data.containsKey(102) && data.get(102) != null) {
+                                        customerId = data.get(102).value;
+                                    }
+                                    if (data.containsKey(2) && data.get(2) != null) {
+                                        accountNumber = data.get(2).value;
+                                    }
+                                    if (data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null) {
+                                        String t = data.get(12).value;
+                                        if (t.length() == 6)
+                                            t = t.substring(0, 2) + ":" + t.substring(2, 4) + ":" + t.substring(4);
+                                        String d = data.get(13).value;
+                                        if (d.length() == 4) d = d.substring(0, 2) + ":" + d.substring(2);
+                                        fromDate = d + " " + t;
+                                    }
+                                    if (data.containsKey(14) && data.containsKey(12) && data.get(14) != null && data.get(12) != null) {
+                                        String t = data.get(12).value;
+                                        if (t.length() == 6)
+                                            t = t.substring(0, 2) + ":" + t.substring(2, 4) + ":" + t.substring(4);
+                                        String d = data.get(14).value;
+                                        if (d.length() == 4) d = d.substring(0, 2) + ":" + d.substring(4);
+                                        toDate = d + " " + t;
+                                    }
 
-                                String server = "136.232.232.118";
-                                String port = "9090";
-                                String url = "http://"+ server + ":" + port + "/NIBServer/Account/transactionDetails";
+                                    StatementEntity statementEntity = new StatementEntity();
+                                    statementEntity.accountNo = accountNumber;
+                                    statementEntity.customerId = customerId;
+                                    statementEntity.fromDate = fromDate;
+                                    statementEntity.toDate = toDate;
 
-                                String result = sendStatementHTTPRequest(url,statementEntity);
-                                StatementResponseEntity statementResponseEntity = new StatementResponseEntity();
-                                statementResponseEntity = new ObjectMapper().readValue(result, StatementResponseEntity.class);
-                                System.out.println(result);
-                                response = statementResponseEntity.errorCodes.get(0);
+                                    String server = "136.232.232.118";
+                                    String port = "9090";
+                                    String url = "http://" + server + ":" + port + "/NIBServer/Account/transactionDetails";
+
+                                    String result = sendStatementHTTPRequest(url, statementEntity);
+                                    StatementResponseEntity statementResponseEntity = new StatementResponseEntity();
+                                    statementResponseEntity = new ObjectMapper().readValue(result, StatementResponseEntity.class);
+                                    System.out.println(result);
+                                    response = statementResponseEntity.errorDescription;
+                                }
                             }
                             else if(processingCode.length() == 6 && processingCode.startsWith("40")){
                                 //prepare variables for the call of service
-                                int apiRequest;
-                                String fromAccountNumber;
-                                String toAccountNumber;
-                                String amount;
-                                String currencyCode;
-                                String transactionFee;
-                                String reference;
-                                String date;
-                                String bankId;
+                                String apiRequest = "";
+                                String reference = "";
+                                String transDate = "";
+                                String fromAccountNumber = "";
+                                String toAccountNumber = "";
+                                String transAmount = "";
+                                String currency = "";
+                                String referenceNo = "";
+                                String transactionFee = "";
+                                String customerId = "";
+                                String bankId = "";
 
-                                Random rand = new Random();
-                                int upperBound = 1000000000;
-                                apiRequest = rand.nextInt(upperBound);
+                                String sessionId = callLogin();
+                                if(!sessionId.isEmpty()) {
 
-                                if(data.containsKey(102) && data.get(102) != null) {
-                                    fromAccountNumber = data.get(102).value;
-                                }
-                                if(data.containsKey(103) && data.get(103) != null) {
-                                    toAccountNumber = data.get(103).value;
-                                }
-                                if(data.containsKey(4) && data.get(4) != null) {
-                                    amount = data.get(4).value;
-                                }
-                                if(data.containsKey(49) && data.get(49) != null) {
-                                    currencyCode = data.get(49).value;
-                                }
-                                if(data.containsKey(28) && data.get(28) != null) {
-                                    transactionFee = data.get(28).value;
-                                }
-                                if(data.containsKey(37) && data.get(37) != null){
-                                    reference = data.get(37).value;
-                                }
-                                if(data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null){
-                                    String t = data.get(12).value;
-                                    if(t.length() == 6)t = t.substring(0,2) + ":" + t.substring(2,4) + ":" + t.substring(4);
-                                    String d = data.get(13).value;
-                                    if(d.length() == 4)d = d.substring(0,2) + ":" + d.substring(2);
-                                    date = d + " " + t;
-                                }
-                                if(data.containsKey(32) && data.get(32) != null){
-                                    bankId = data.get(32).value;
-                                }
+                                    Random rand = new Random();
+                                    int upperBound = 1000000000;
+                                    apiRequest = String.valueOf(rand.nextInt(upperBound));
 
-                                /*StatementEntity statementEntity = new StatementEntity();
-                                statementEntity.accountNo = accountNumber;
-                                statementEntity.customerId = customerId;
-                                statementEntity.fromDate = fromDate;
-                                statementEntity.toDate = toDate;
+                                    if (data.containsKey(102) && data.get(102) != null) {
+                                        fromAccountNumber = data.get(102).value;
+                                    }
+                                    if (data.containsKey(103) && data.get(103) != null) {
+                                        toAccountNumber = data.get(103).value;
+                                    }
+                                    if (data.containsKey(4) && data.get(4) != null) {
+                                        transAmount = data.get(4).value;
+                                    }
+                                    if (data.containsKey(49) && data.get(49) != null) {
+                                        currency = data.get(49).value;
+                                    }
+                                    if (data.containsKey(28) && data.get(28) != null) {
+                                        transactionFee = data.get(28).value;
+                                    }
+                                    if (data.containsKey(37) && data.get(37) != null) {
+                                        reference = referenceNo = data.get(37).value;
+                                    }
+                                    if (data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null) {
+                                        String t = data.get(12).value;
+                                        if (t.length() == 6)
+                                            t = t.substring(0, 2) + ":" + t.substring(2, 4) + ":" + t.substring(4);
+                                        String d = data.get(13).value;
+                                        if (d.length() == 4) d = d.substring(0, 2) + ":" + d.substring(2);
+                                        transDate = d + " " + t;
+                                    }
+                                    if (data.containsKey(2) && data.get(2) != null) {
+                                        customerId = data.get(2).value;
+                                    }
+                                    if (data.containsKey(32) && data.get(32) != null) {
+                                        bankId = data.get(32).value;
+                                    }
 
-                                String server = "136.232.232.118";
-                                String port = "9090";
-                                String url = "http://"+ server + ":" + port + "/NIBServer/Account/transactionDetails";
+                                    LocalTransferEntity localTransferEntity = new LocalTransferEntity();
+                                    localTransferEntity.apiRequest = apiRequest;
+                                    localTransferEntity.reference = reference;
+                                    localTransferEntity.transDate = transDate;
+                                    localTransferEntity.fromAccountNumber = fromAccountNumber;
+                                    localTransferEntity.toAccountNumber = toAccountNumber;
+                                    localTransferEntity.transAmount = transAmount;
+                                    localTransferEntity.currency = currency;
+                                    localTransferEntity.referenceNo = referenceNo;
+                                    localTransferEntity.transactionFee = transactionFee;
+                                    localTransferEntity.customerId = customerId;
+                                    localTransferEntity.bankId = bankId;
 
-                                String result = sendWithDrawalHTTPRequest(url,statementEntity);
-                                StatementResponseEntity statementResponseEntity = new StatementResponseEntity();
-                                statementResponseEntity = new ObjectMapper().readValue(result, StatementResponseEntity.class);
-                                System.out.println(result);
-                                response = statementResponseEntity.errorCodes.get(0);*/
+                                    String server = "136.232.232.118";
+                                    String port = "9090";
+                                    String url = "http://" + server + ":" + port + "/NIBServer/Account/LocalTransfer";
+
+                                    String result = sendLocalTransferHTTPRequest(url, localTransferEntity);
+                                    LocalTransferResponseEntity localTransferResponseEntity = new LocalTransferResponseEntity();
+                                    localTransferResponseEntity = new ObjectMapper().readValue(result, LocalTransferResponseEntity.class);
+                                    System.out.println(result);
+                                    response = localTransferResponseEntity.errorDescription;
+                                }
                             }
                             else if(processingCode.length() == 6 && processingCode.startsWith("01")){
                                 //prepare variables for the call of service
@@ -373,48 +413,53 @@ public class Server {
                                 String cashBoxReference = "";
                                 String cardNumber = "";
 
-                                Random rand = new Random();
-                                int upperBound = 1000000000;
-                                apiRequest = String.valueOf(rand.nextInt(upperBound));
+                                String sessionId = callLogin();
+                                if(!sessionId.isEmpty()) {
 
-                                if(data.containsKey(23) && data.get(23) != null) {
-                                    cardNumber = data.get(23).value;
-                                }
-                                if(data.containsKey(4) && data.get(4) != null) {
-                                    transAmount = data.get(4).value;
-                                }
-                                if(data.containsKey(49) && data.get(49) != null) {
-                                    currency = data.get(49).value;
-                                }
-                                if(data.containsKey(37) && data.get(37) != null){
-                                    referenceNo = data.get(37).value;
-                                }
-                                if(data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null){
-                                    String t = data.get(12).value;
-                                    if(t.length() == 6)t = t.substring(0,2) + ":" + t.substring(2,4) + ":" + t.substring(4);
-                                    String d = data.get(13).value;
-                                    if(d.length() == 4)d = d.substring(0,2) + ":" + d.substring(2);
-                                    transDate = d + " " + t;
-                                }
+                                    Random rand = new Random();
+                                    int upperBound = 1000000000;
+                                    apiRequest = String.valueOf(rand.nextInt(upperBound));
 
-                                WithDrawalEntity withDrawalEntity = new WithDrawalEntity();
-                                withDrawalEntity.transAmount = transAmount;
-                                withDrawalEntity.referenceNo = referenceNo;
-                                withDrawalEntity.transDate = transDate;
-                                withDrawalEntity.currency = currency;
-                                withDrawalEntity.apiRequest = apiRequest;
-                                withDrawalEntity.cashBoxReference = cashBoxReference;
-                                withDrawalEntity.cardNumber = cardNumber;
+                                    if (data.containsKey(23) && data.get(23) != null) {
+                                        cardNumber = data.get(23).value;
+                                    }
+                                    if (data.containsKey(4) && data.get(4) != null) {
+                                        transAmount = data.get(4).value;
+                                    }
+                                    if (data.containsKey(49) && data.get(49) != null) {
+                                        currency = data.get(49).value;
+                                    }
+                                    if (data.containsKey(37) && data.get(37) != null) {
+                                        referenceNo = data.get(37).value;
+                                    }
+                                    if (data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null) {
+                                        String t = data.get(12).value;
+                                        if (t.length() == 6)
+                                            t = t.substring(0, 2) + ":" + t.substring(2, 4) + ":" + t.substring(4);
+                                        String d = data.get(13).value;
+                                        if (d.length() == 4) d = d.substring(0, 2) + ":" + d.substring(2);
+                                        transDate = d + " " + t;
+                                    }
 
-                                String server = "136.232.232.118";
-                                String port = "9090";
-                                String url = "http://"+ server + ":" + port + "/NIBServer/Account/Withdrawal";
+                                    WithDrawalEntity withDrawalEntity = new WithDrawalEntity();
+                                    withDrawalEntity.transAmount = transAmount;
+                                    withDrawalEntity.referenceNo = referenceNo;
+                                    withDrawalEntity.transDate = transDate;
+                                    withDrawalEntity.currency = currency;
+                                    withDrawalEntity.apiRequest = apiRequest;
+                                    withDrawalEntity.cashBoxReference = cashBoxReference;
+                                    withDrawalEntity.cardNumber = cardNumber;
 
-                                String result = sendWithDrawalHTTPRequest(url,withDrawalEntity);
-                                WithDrawalResponseEntity withDrawalResponseEntity = new WithDrawalResponseEntity();
-                                withDrawalResponseEntity = new ObjectMapper().readValue(result, WithDrawalResponseEntity.class);
-                                System.out.println(result);
-                                response = withDrawalResponseEntity.errorCode;
+                                    String server = "136.232.232.118";
+                                    String port = "9090";
+                                    String url = "http://" + server + ":" + port + "/NIBServer/Account/Withdrawal";
+
+                                    String result = sendWithDrawalHTTPRequest(url, withDrawalEntity);
+                                    WithDrawalResponseEntity withDrawalResponseEntity = new WithDrawalResponseEntity();
+                                    withDrawalResponseEntity = new ObjectMapper().readValue(result, WithDrawalResponseEntity.class);
+                                    System.out.println(result);
+                                    response = withDrawalResponseEntity.errorDescription;
+                                }
 
                             }
                             else if(processingCode.length() == 6 && processingCode.startsWith("00")){
@@ -428,55 +473,60 @@ public class Server {
                                 String merchantBankId = "";
                                 String merchantAccountNo = "";
 
-                                Random rand = new Random();
-                                int upperBound = 1000000000;
-                                apiRequest = String.valueOf(rand.nextInt(upperBound));
+                                String sessionId = callLogin();
+                                if(!sessionId.isEmpty()) {
 
-                                if(data.containsKey(23) && data.get(23) != null) {
-                                    cardNumber = data.get(23).value;
-                                }
-                                if(data.containsKey(4) && data.get(4) != null) {
-                                    transAmount = data.get(4).value;
-                                }
-                                if(data.containsKey(49) && data.get(49) != null) {
-                                    currency = data.get(49).value;
-                                }
-                                if(data.containsKey(37) && data.get(37) != null){
-                                    referenceNo = data.get(37).value;
-                                }
-                                if(data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null){
-                                    String t = data.get(12).value;
-                                    if(t.length() == 6)t = t.substring(0,2) + ":" + t.substring(2,4) + ":" + t.substring(4);
-                                    String d = data.get(13).value;
-                                    if(d.length() == 4)d = d.substring(0,2) + ":" + d.substring(2);
-                                    transDate = d + " " + t;
-                                }
-                                if(data.containsKey(32) && data.get(32) != null){
-                                    merchantBankId = data.get(32).value;
-                                }
-                                if(data.containsKey(103) && data.get(103) != null){
-                                    merchantAccountNo = data.get(103).value;
-                                }
+                                    Random rand = new Random();
+                                    int upperBound = 1000000000;
+                                    apiRequest = String.valueOf(rand.nextInt(upperBound));
 
-                                PurchaseEntity purchaseEntity = new PurchaseEntity();
-                                purchaseEntity.merchantBankId = merchantBankId;
-                                purchaseEntity.transAmount = transAmount;
-                                purchaseEntity.referenceNo = referenceNo;
-                                purchaseEntity.transDate = transDate;
-                                purchaseEntity.currency = currency;
-                                purchaseEntity.apiRequest = apiRequest;
-                                purchaseEntity.merchantAccountNo = merchantAccountNo;
-                                purchaseEntity.cardNumber = cardNumber;
+                                    if (data.containsKey(23) && data.get(23) != null) {
+                                        cardNumber = data.get(23).value;
+                                    }
+                                    if (data.containsKey(4) && data.get(4) != null) {
+                                        transAmount = data.get(4).value;
+                                    }
+                                    if (data.containsKey(49) && data.get(49) != null) {
+                                        currency = data.get(49).value;
+                                    }
+                                    if (data.containsKey(37) && data.get(37) != null) {
+                                        referenceNo = data.get(37).value;
+                                    }
+                                    if (data.containsKey(12) && data.containsKey(13) && data.get(12) != null && data.get(13) != null) {
+                                        String t = data.get(12).value;
+                                        if (t.length() == 6)
+                                            t = t.substring(0, 2) + ":" + t.substring(2, 4) + ":" + t.substring(4);
+                                        String d = data.get(13).value;
+                                        if (d.length() == 4) d = d.substring(0, 2) + ":" + d.substring(2);
+                                        transDate = d + " " + t;
+                                    }
+                                    if (data.containsKey(32) && data.get(32) != null) {
+                                        merchantBankId = data.get(32).value;
+                                    }
+                                    if (data.containsKey(103) && data.get(103) != null) {
+                                        merchantAccountNo = data.get(103).value;
+                                    }
 
-                                String server = "136.232.232.118";
-                                String port = "9090";
-                                String url = "http://"+ server + ":" + port + "/NIBServer/Account/Purchase";
+                                    PurchaseEntity purchaseEntity = new PurchaseEntity();
+                                    purchaseEntity.merchantBankId = merchantBankId;
+                                    purchaseEntity.transAmount = transAmount;
+                                    purchaseEntity.referenceNo = referenceNo;
+                                    purchaseEntity.transDate = transDate;
+                                    purchaseEntity.currency = currency;
+                                    purchaseEntity.apiRequest = apiRequest;
+                                    purchaseEntity.merchantAccountNo = merchantAccountNo;
+                                    purchaseEntity.cardNumber = cardNumber;
 
-                                String result = sendPurchaseHTTPRequest(url,purchaseEntity);
-                                PurchaseResponseEntity purchaseResponseEntity = new PurchaseResponseEntity();
-                                purchaseResponseEntity = new ObjectMapper().readValue(result, PurchaseResponseEntity.class);
-                                System.out.println(result);
-                                response = purchaseResponseEntity.errorCode;
+                                    String server = "136.232.232.118";
+                                    String port = "9090";
+                                    String url = "http://" + server + ":" + port + "/NIBServer/Account/Purchase";
+
+                                    String result = sendPurchaseHTTPRequest(url, purchaseEntity);
+                                    PurchaseResponseEntity purchaseResponseEntity = new PurchaseResponseEntity();
+                                    purchaseResponseEntity = new ObjectMapper().readValue(result, PurchaseResponseEntity.class);
+                                    System.out.println(result);
+                                    response = purchaseResponseEntity.errorDescription;
+                                }
                             }
                         }
                     }
@@ -488,6 +538,17 @@ public class Server {
 
                     TreeSet<Integer> output200 = Initializer.initializeData200();
                     filteredData = DataFilter.filterData(data,output200);
+                    if(filteredData.containsKey(39)) {
+                        ISOField field = filteredData.get(39);
+                        field.value = response;
+                        filteredData.put(39, field);
+                    }
+                    else{
+                        ISOField field = new ISOField();
+                        field.id = 39;
+                        field.value = response;
+                        filteredData.put(39,field);
+                    }
                     ISO8583Encoder iso8583Encoder = new ISO8583Encoder();
                     rawData = iso8583Encoder.encodeMessage(filteredData);
                     response = "0210";
@@ -844,6 +905,8 @@ public class Server {
                     bufferedWriter.write(isoParser.getMessageTypesMapper().get(val));
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
+                    rawData = msg.substring(4);
+                    response = ""+(val + 10);
                 }
             }
             output = "Data sent from server : "+response + rawData;
@@ -856,12 +919,58 @@ public class Server {
         }
     }
 
-    public static String sendRefundHTTPRequest(String url,RefundEntity refundEntity){
+    public static String callLogin() {
+        String sessionId = "";
+        String output = "";
+        try {
+            String url = "http://136.232.232.118:9090/NIBServer/SecurityService/login/";
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost  = new HttpPost(url);
+            httpPost.setHeader("Content-type", "application/json");
+            String body = "{\n" +
+                    "\t\"userId\":\"XPI_POS\",\n" +
+                    "\t\"password\":\"123456\",\n" +
+                    "\t\"company\":\"1\",\n" +
+                    "\t\"branch\":\"5\"\n" +
+                    "}";
+            StringEntity stringEntity = new StringEntity(body);
+            stringEntity.setContentType("application/json");
+            httpPost.getRequestLine();
+            httpPost.setEntity(stringEntity);
+
+            HttpResponse response = httpClient.execute(httpPost);
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 200 && statusCode != 201) {
+                throw new RuntimeException("Failed with HTTP error code : " + statusCode);
+            }
+
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader((response.getEntity().getContent())));
+
+            System.out.println("Output from Server .... \n");
+            String temp = "";
+            while ((temp = br.readLine()) != null) {
+                System.out.println(temp);
+                output += temp;
+            }
+            LoginResponseEntity loginResponseEntity = new ObjectMapper().readValue(output, LoginResponseEntity.class);
+            sessionId = loginResponseEntity.sessionId;
+
+        } catch(Exception ex){
+            ex.printStackTrace();
+        }
+
+        return sessionId;
+    }
+
+    public static String sendRefundHTTPRequest(String url,RefundEntity refundEntity, String sessionId){
         String output = "";
         try {
             HttpClient httpClient = new DefaultHttpClient();
             HttpPost httpPost  = new HttpPost(url);
             httpPost.setHeader("Content-type", "application/json");
+            httpPost.setHeader("session",sessionId);
             String body = "{\n" +
                     "    \"apiRequestId\": \""+refundEntity.apiRequest+"\",\n" +
                     "    \"cardNumber\": \""+refundEntity.cardNumber+"\",\n" +
@@ -1031,13 +1140,60 @@ public class Server {
             HttpPost httpPost  = new HttpPost(url);
             httpPost.setHeader("Content-type", "application/json");
             String body = "{\n" +
-                    "    \"transAmount\": \""+withDrawalEntity.transAmount+"\",\n" +
-                    "    \"referenceNo\": \""+withDrawalEntity.referenceNo+"\",\n" +
-                    "    \"transDate\": \""+withDrawalEntity.transDate+"\",\n" +
-                    "    \"currency\": \""+withDrawalEntity.currency+"\",\n" +
-                    "    \"apiRequestId\": \""+withDrawalEntity.apiRequest+"\",\n" +
-                    "    \"cashBoxReference\": \""+withDrawalEntity.cashBoxReference+"\",\n" +
-                    "    \"cardNumber\": \""+withDrawalEntity.cardNumber+"\"\n" +
+                    "    \"merchantBankId\": \""+purchaseEntity.merchantBankId+"\",\n" +
+                    "    \"transAmount\": \""+purchaseEntity.transAmount+"\",\n" +
+                    "    \"referenceNo\": \""+purchaseEntity.referenceNo+"\",\n" +
+                    "    \"transDate\": \""+purchaseEntity.transDate+"\",\n" +
+                    "    \"merchantAccountNo\": \""+purchaseEntity.merchantAccountNo+"\",\n" +
+                    "    \"currency\": \""+purchaseEntity.currency+"\",\n" +
+                    "    \"apiRequestId\": \""+purchaseEntity.apiRequest+"\",\n" +
+                    "    \"cardNumber\": \""+purchaseEntity.cardNumber+"\"\n" +
+                    "}";
+            StringEntity stringEntity = new StringEntity(body);
+            stringEntity.setContentType("application/json");
+            httpPost.getRequestLine();
+            httpPost.setEntity(stringEntity);
+
+            HttpResponse response = httpClient.execute(httpPost);
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 200 && statusCode != 201) {
+                throw new RuntimeException("Failed with HTTP error code : " + statusCode);
+            }
+
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader((response.getEntity().getContent())));
+
+            System.out.println("Output from Server .... \n");
+            String temp = "";
+            while ((temp = br.readLine()) != null) {
+                System.out.println(temp);
+                output += temp;
+            }
+        } catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return output;
+    }
+
+    public static String sendLocalTransferHTTPRequest(String url,LocalTransferEntity localTransferEntity){
+        String output = "";
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost  = new HttpPost(url);
+            httpPost.setHeader("Content-type", "application/json");
+            String body = "{\n" +
+                    "    \"apiRequestId\": \""+localTransferEntity.apiRequest+"\",\n" +
+                    "    \"reference\": \""+localTransferEntity.reference+"\",\n" +
+                    "    \"transDate\": \""+localTransferEntity.transDate+"\",\n" +
+                    "    \"fromAccountNo\": \""+localTransferEntity.fromAccountNumber+"\",\n" +
+                    "    \"toAccountNo\": \""+localTransferEntity.toAccountNumber+"\",\n" +
+                    "    \"transAmount\": \""+localTransferEntity.transAmount+"\",\n" +
+                    "    \"currency\": \""+localTransferEntity.currency+"\",\n" +
+                    "    \"referenceNo\": \""+localTransferEntity.referenceNo+"\",\n" +
+                    "    \"transactionFee\": \""+localTransferEntity.transactionFee+"\",\n" +
+                    "    \"customerId\": \""+localTransferEntity.customerId+"\",\n" +
+                    "    \"bankId\": "+localTransferEntity.bankId+"\n" +
                     "}";
             StringEntity stringEntity = new StringEntity(body);
             stringEntity.setContentType("application/json");
